@@ -1,0 +1,24 @@
+# Environment
+.env
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+
+# Runtime logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Generated data
+data/*.csv
+reports/*.txt
