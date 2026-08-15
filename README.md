@@ -1,6 +1,6 @@
 # Export Automation System
 
-Automation pipeline untuk membantu proses **buyer discovery dan export outreach** untuk produk Singing Bowls.
+Automation pipeline untuk membantu proses **buyer discovery dan export outreach** untuk produk.
 
 Project ini menggabungkan pencarian buyer berbasis keyword, ekstraksi data kontak dari website, validasi email, klasifikasi email menggunakan Gemini, simulasi campaign, serta pengiriman email melalui Brevo SMTP.
 
