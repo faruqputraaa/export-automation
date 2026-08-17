@@ -4,6 +4,7 @@ from tavily import TavilyClient
 from dotenv import load_dotenv
 
 from search.search_adapter import SearchAdapter
+from typing import Any
 
 
 class TavilySearch(SearchAdapter):
@@ -22,7 +23,7 @@ class TavilySearch(SearchAdapter):
             api_key=api_key
         )
 
-    def search(self, query: str) -> list[dict]:
+    def search(self, query: str) -> list[dict[str, Any]]:
         response = self.client.search(
             query=query,
             search_depth="basic",

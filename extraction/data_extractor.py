@@ -2,6 +2,7 @@ import re
 from urllib.parse import urlparse
 
 from bs4 import BeautifulSoup
+from typing import Any
 
 
 class DataExtractor:
@@ -149,7 +150,7 @@ class DataExtractor:
         buyer_name: str = "",
         company_name: str = "",
         country: str = "",
-    ) -> list[dict]:
+    ) -> list[dict[str, Any]]:
 
         emails = self.extract_emails(
             content

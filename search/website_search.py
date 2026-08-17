@@ -3,6 +3,7 @@ import requests
 from bs4 import BeautifulSoup
 
 from search.search_adapter import SearchAdapter
+from typing import Any
 
 
 class WebsiteSearch(SearchAdapter):
@@ -18,7 +19,7 @@ class WebsiteSearch(SearchAdapter):
             )
         }
 
-    def fetch(self, url: str) -> dict:
+    def fetch(self, url: str) -> dict[str, Any]:
         """
         Mengambil konten dari website.
         """
@@ -64,7 +65,7 @@ class WebsiteSearch(SearchAdapter):
             "html": response.text,
         }
 
-    def search(self, query: str) -> list[dict]:
+    def search(self, query: str) -> list[dict[str, Any]]:
         """
         SearchAdapter implementation.
 

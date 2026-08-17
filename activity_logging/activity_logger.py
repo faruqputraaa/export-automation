@@ -1,6 +1,7 @@
 import csv
 from pathlib import Path
 from datetime import datetime
+from typing import Any
 
 
 class ActivityLogger:
@@ -28,7 +29,7 @@ class ActivityLogger:
             exist_ok=True
         )
 
-    def save_buyers(self, records: list[dict]) -> None:
+    def save_buyers(self, records: list[dict[str, Any]]) -> None:
         if not records:
             return
 

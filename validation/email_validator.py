@@ -1,4 +1,5 @@
 import re
+from typing import Any
 
 
 class EmailValidator:
@@ -45,7 +46,7 @@ class EmailValidator:
     
         return True
 
-    def validate_records(self, records: list[dict]) -> tuple[list[dict], list[dict]]:
+    def validate_records(self, records: list[dict[str, Any]]) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
         """
         Memisahkan record valid dan invalid.
 

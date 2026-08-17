@@ -1,10 +1,11 @@
 from datetime import datetime
 from pathlib import Path
+from typing import Any
 
 
 class ReportGenerator:
 
-    def generate(self, result: dict) -> str:
+    def generate(self, result: dict[str, Any]) -> str:
         total = result["total"]
         sent = result["sent"]
         skipped = result["skipped"]
@@ -49,7 +50,7 @@ Success Rate:
 
     def save(
         self,
-        result: dict,
+        result: dict[str, Any],
         file_path: str = "reports/latest_report.txt"
     ):
         report = self.generate(result)

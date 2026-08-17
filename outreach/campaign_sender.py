@@ -1,5 +1,6 @@
 import csv
 from pathlib import Path
+from typing import Any
 
 
 class CampaignSender:
@@ -44,7 +45,7 @@ class CampaignSender:
         body: str,
         attachment=None,
         dry_run: bool = False
-    ) -> dict:
+    ) -> dict[str, Any]:
     
         emails = self.load_emails(file_path)
     
