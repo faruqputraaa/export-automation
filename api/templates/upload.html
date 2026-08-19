@@ -1,14 +1,26 @@
 {% extends "base.html" %} {% block title %} Upload - Export Automation {%
 endblock %} {% block content %}
 
-<div class="max-w-5xl">
+<div class="max-w-6xl">
+    <!-- Header -->
+
     <div class="mb-8">
         <h2 class="text-3xl font-bold">Upload Buyers</h2>
 
         <p class="text-gray-500 mt-2">Import buyer records from a CSV file.</p>
     </div>
 
+    <!-- Upload Card -->
+
     <div class="bg-white rounded-xl shadow-sm p-6">
+        <div class="mb-5">
+            <h3 class="text-lg font-semibold">Import CSV</h3>
+
+            <p class="text-sm text-gray-500 mt-1">
+                Upload a CSV file containing buyer information.
+            </p>
+        </div>
+
         <form
             hx-post="/ui/upload"
             hx-target="#upload-result"
@@ -16,41 +28,85 @@ endblock %} {% block content %}
             hx-encoding="multipart/form-data"
             hx-indicator="#loading"
         >
-            <label class="block text-sm font-medium mb-2"> CSV File </label>
+            <!-- File Input -->
 
-            <input
-                type="file"
-                name="file"
-                accept=".csv"
-                required
-                class="block w-full border border-gray-300 rounded-lg p-3"
-            />
+            <div>
+                <label for="csv-file" class="block text-sm font-medium mb-2">
+                    CSV File
+                </label>
 
-            <button
-                type="submit"
-                class="mt-5 bg-gray-900 text-white px-6 py-3 rounded-lg hover:bg-gray-800"
-            >
-                Upload CSV
-            </button>
+                <input
+                    id="csv-file"
+                    type="file"
+                    name="file"
+                    accept=".csv"
+                    required
+                    class="block w-full border border-gray-300 rounded-lg p-3 text-sm bg-white"
+                />
+
+                <p class="text-xs text-gray-500 mt-2">
+                    Only CSV files are supported.
+                </p>
+            </div>
+
+            <!-- Upload Button -->
+
+            <div class="mt-5">
+                <button
+                    type="submit"
+                    class="bg-gray-900 text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition disabled:opacity-50"
+                >
+                    Upload CSV
+                </button>
+            </div>
         </form>
     </div>
 
+    <!-- Upload Result -->
+
     <div id="upload-result" class="mt-6"></div>
 
-    <div class="mt-6 bg-white rounded-xl shadow-sm p-6">
-        <h3 class="text-lg font-semibold mb-4">CSV Format</h3>
+    <!-- Buyers -->
 
-        <p class="text-sm text-gray-500 mb-4">
-            The required field is <strong>email</strong>. Other fields are
-            optional.
-        </p>
+    <div
+        class="mt-6"
+        hx-get="/ui/buyers"
+        hx-trigger="load, buyersUpdated from:body"
+        hx-target="#buyers-table"
+        hx-swap="innerHTML"
+        hx-indicator="#loading"
+    >
+        <div id="buyers-table">
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <div class="flex items-center gap-3">
+                    <div
+                        class="w-5 h-5 border-4 border-gray-200 border-t-gray-900 rounded-full animate-spin"
+                    ></div>
 
-        <pre
-            class="bg-gray-900 text-gray-100 rounded-lg p-4 text-sm overflow-x-auto"
-        >
+                    <p class="text-gray-500">Loading buyers...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CSV Format -->
+
+    <div class="bg-white rounded-xl shadow-sm p-6 mt-6">
+        <div class="mb-4">
+            <h3 class="text-lg font-semibold">CSV Format</h3>
+
+            <p class="text-sm text-gray-500 mt-1">
+                The <strong>email</strong> field is required. Other fields are
+                optional.
+            </p>
+        </div>
+
+        <div class="overflow-x-auto">
+            <pre class="bg-gray-900 text-gray-100 rounded-lg p-4 text-sm">
 email,buyer_name,company_name,website,country,source_platform
 buyer@example.com,John,ABC Trading,https://example.com,USA,Upload
 sales@example.com,,XYZ Trading,https://xyz.com,India,Upload</pre>
+        </div>
     </div>
 </div>
 

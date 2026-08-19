@@ -1,54 +1,159 @@
-<div class="space-y-4">
+<div class="space-y-5">
 
     <div class="flex items-center justify-between">
 
         <div>
             <h3 class="text-xl font-semibold">
-                Search Results
+                Buyer Results
             </h3>
 
-            <p class="text-sm text-gray-500">
+            <p class="text-sm text-gray-500 mt-1">
                 Query: {{ query }}
             </p>
         </div>
 
         <span class="text-sm text-gray-500">
-            {{ results|length }} results
+            {{ buyers|length }} buyers found
         </span>
 
     </div>
 
 
-    {% if results %}
+    {% if buyers %}
 
-        {% for result in results %}
+        {% for buyer in buyers %}
 
-        <div class="bg-white rounded-xl shadow-sm p-5">
+        <div
+            id="buyer-{{ loop.index }}"
+            class="bg-white rounded-xl shadow-sm p-6"
+        >
 
-            <h4 class="font-semibold text-lg">
-                {{ result.title }}
-            </h4>
+            <div class="flex items-start justify-between gap-6">
 
-            {% if result.url %}
+                <div class="flex-1">
 
-            <a
-                href="{{ result.url }}"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="text-sm text-blue-600 hover:underline break-all"
-            >
-                {{ result.url }}
-            </a>
+                    <h4 class="text-lg font-semibold">
+                        {{ buyer.company_name or "Unknown Company" }}
+                    </h4>
 
-            {% endif %}
 
-            {% if result.content %}
+                    <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
 
-            <p class="text-gray-600 text-sm mt-3">
-                {{ result.content }}
-            </p>
+                        <div>
+                            <p class="text-xs text-gray-500">
+                                Email
+                            </p>
 
-            {% endif %}
+                            <p class="text-sm font-medium">
+                                {{ buyer.email }}
+                            </p>
+                        </div>
+
+
+                        <div>
+                            <p class="text-xs text-gray-500">
+                                Country
+                            </p>
+
+                            <p class="text-sm font-medium">
+                                {{ buyer.country or "Unknown" }}
+                            </p>
+                        </div>
+
+
+                        <div>
+                            <p class="text-xs text-gray-500">
+                                Website
+                            </p>
+
+                            {% if buyer.website %}
+
+                            <a
+                                href="{{ buyer.website }}"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="text-sm text-blue-600 hover:underline break-all"
+                            >
+                                {{ buyer.website }}
+                            </a>
+
+                            {% else %}
+
+                            <p class="text-sm">
+                                -
+                            </p>
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <div>
+                            <p class="text-xs text-gray-500">
+                                Source
+                            </p>
+
+                            <p class="text-sm font-medium">
+                                {{ buyer.source_platform }}
+                            </p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <form
+                    hx-post="/ui/search/save"
+                    hx-target="#buyer-{{ loop.index }}"
+                    hx-swap="outerHTML"
+                >
+                    <input
+                        type="hidden"
+                        name="email"
+                        value="{{ buyer.email }}"
+                    >
+                
+                    <input
+                        type="hidden"
+                        name="buyer_name"
+                        value="{{ buyer.buyer_name }}"
+                    >
+                
+                    <input
+                        type="hidden"
+                        name="company_name"
+                        value="{{ buyer.company_name }}"
+                    >
+                
+                    <input
+                        type="hidden"
+                        name="website"
+                        value="{{ buyer.website }}"
+                    >
+                
+                    <input
+                        type="hidden"
+                        name="country"
+                        value="{{ buyer.country }}"
+                    >
+                
+                    <input
+                        type="hidden"
+                        name="source_platform"
+                        value="{{ buyer.source_platform }}"
+                    >
+                
+                    <button
+                        type="submit"
+                        class="shrink-0 bg-gray-900 text-white px-5 py-2.5 rounded-lg hover:bg-gray-800"
+                    >
+                        Save
+                    </button>
+                
+                </form>
+
+            </div>
 
         </div>
 
@@ -56,8 +161,8 @@
 
     {% else %}
 
-        <div class="bg-white rounded-xl p-6 text-gray-500">
-            No results found.
+        <div class="bg-white rounded-xl p-8 text-center text-gray-500">
+            No buyers with valid email addresses were found.
         </div>
 
     {% endif %}

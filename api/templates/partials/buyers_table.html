@@ -1,0 +1,112 @@
+<div class="bg-white rounded-xl shadow-sm overflow-hidden">
+
+    <div class="p-6 border-b">
+        <div class="flex items-center justify-between">
+
+            <div>
+                <h3 class="text-lg font-semibold">
+                    Buyers
+                </h3>
+
+                <p class="text-sm text-gray-500 mt-1">
+                    {{ buyers|length }} buyer(s) stored
+                </p>
+            </div>
+
+        </div>
+    </div>
+
+
+    {% if buyers %}
+
+    <div class="overflow-x-auto">
+
+        <table class="w-full text-sm">
+
+            <thead class="bg-gray-50">
+
+                <tr>
+                    <th class="text-left px-6 py-4">
+                        Company
+                    </th>
+
+                    <th class="text-left px-6 py-4">
+                        Email
+                    </th>
+
+                    <th class="text-left px-6 py-4">
+                        Country
+                    </th>
+
+                    <th class="text-left px-6 py-4">
+                        Website
+                    </th>
+
+                    <th class="text-left px-6 py-4">
+                        Source
+                    </th>
+                </tr>
+
+            </thead>
+
+
+            <tbody class="divide-y">
+
+                {% for buyer in buyers %}
+
+                <tr class="hover:bg-gray-50">
+
+                    <td class="px-6 py-4 font-medium">
+                        {{ buyer.company_name or "-" }}
+                    </td>
+
+                    <td class="px-6 py-4">
+                        {{ buyer.email }}
+                    </td>
+
+                    <td class="px-6 py-4">
+                        {{ buyer.country or "-" }}
+                    </td>
+
+                    <td class="px-6 py-4">
+                        {% if buyer.website %}
+
+                        <a
+                            href="{{ buyer.website }}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-blue-600 hover:underline"
+                        >
+                            Website
+                        </a>
+
+                        {% else %}
+
+                        -
+
+                        {% endif %}
+                    </td>
+
+                    <td class="px-6 py-4">
+                        {{ buyer.source_platform or "-" }}
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    {% else %}
+
+    <div class="p-8 text-center text-gray-500">
+        No buyers have been uploaded yet.
+    </div>
+
+    {% endif %}
+
+</div>

@@ -1,26 +1,29 @@
-{% extends "base.html" %}
-
-{% block title %}
-Send - Export Automation
-{% endblock %}
-
-{% block content %}
+{% extends "base.html" %} {% block title %} Send - Export Automation {% endblock
+%} {% block content %}
 
 <div class="max-w-5xl">
-
     <div class="mb-8">
-        <h2 class="text-3xl font-bold">
-            Send Campaign
-        </h2>
+        <h2 class="text-3xl font-bold">Send Campaign</h2>
 
         <p class="text-gray-500 mt-2">
             Send outreach emails to classified buyers.
         </p>
     </div>
-
-
+    <div
+        class="my-10"
+        hx-get="/ui/send/status"
+        hx-trigger="load"
+        hx-target="#send-status"
+        hx-swap="innerHTML"
+        hx-indicator="#loading"
+    >
+        <div id="send-status">
+            <div class="bg-white rounded-xl shadow-sm p-6 text-gray-500">
+                Loading classified emails...
+            </div>
+        </div>
+    </div>
     <div class="bg-white rounded-xl shadow-sm p-6">
-
         <form
             hx-post="/ui/send"
             hx-target="#send-result"
@@ -28,42 +31,27 @@ Send - Export Automation
             hx-indicator="#loading"
             enctype="multipart/form-data"
         >
-
             <!-- Audience -->
 
             <div class="mb-5">
-
-                <label class="block text-sm font-medium mb-2">
-                    Audience
-                </label>
+                <label class="block text-sm font-medium mb-2"> Audience </label>
 
                 <select
                     name="audience"
                     class="w-full border border-gray-300 rounded-lg px-4 py-3"
                 >
-                    <option value="business">
-                        Business
-                    </option>
+                    <option value="business">Business</option>
 
-                    <option value="individual">
-                        Individual
-                    </option>
+                    <option value="individual">Individual</option>
 
-                    <option value="all">
-                        All
-                    </option>
+                    <option value="all">All</option>
                 </select>
-
             </div>
-
 
             <!-- Subject -->
 
             <div class="mb-5">
-
-                <label class="block text-sm font-medium mb-2">
-                    Subject
-                </label>
+                <label class="block text-sm font-medium mb-2"> Subject </label>
 
                 <input
                     type="text"
@@ -71,15 +59,12 @@ Send - Export Automation
                     value="Singing Bowls Company Presentation"
                     required
                     class="w-full border border-gray-300 rounded-lg px-4 py-3"
-                >
-
+                />
             </div>
-
 
             <!-- Body -->
 
             <div class="mb-5">
-
                 <label class="block text-sm font-medium mb-2">
                     Email Body
                 </label>
@@ -89,7 +74,8 @@ Send - Export Automation
                     rows="10"
                     required
                     class="w-full border border-gray-300 rounded-lg px-4 py-3"
-                >Hello,
+                >
+Hello,
 
 We are an export supplier of Himalayan Singing Bowls.
 
@@ -100,14 +86,11 @@ please feel free to contact us.
 
 Best regards,
 Export Automation</textarea>
-
             </div>
-
 
             <!-- Attachment -->
 
             <div class="mb-5">
-
                 <label class="block text-sm font-medium mb-2">
                     PDF Attachment
                 </label>
@@ -117,41 +100,32 @@ Export Automation</textarea>
                     name="attachment"
                     accept=".pdf,application/pdf"
                     class="block w-full border border-gray-300 rounded-lg p-3"
-                >
+                />
 
                 <p class="text-sm text-gray-500 mt-2">
                     Only PDF files are currently supported.
                 </p>
-
             </div>
-
 
             <!-- Dry Run -->
 
             <div class="mb-6">
-
                 <label class="flex items-center gap-3">
-
                     <input
                         type="checkbox"
                         name="dry_run"
                         value="true"
                         checked
                         class="w-4 h-4"
-                    >
+                    />
 
-                    <span class="text-sm font-medium">
-                        Dry Run
-                    </span>
-
+                    <span class="text-sm font-medium"> Dry Run </span>
                 </label>
 
                 <p class="text-sm text-gray-500 mt-2">
                     Dry Run simulates the campaign without sending real emails.
                 </p>
-
             </div>
-
 
             <!-- Submit -->
 
@@ -161,18 +135,10 @@ Export Automation</textarea>
             >
                 Send Campaign
             </button>
-
         </form>
-
     </div>
 
-
-    <div
-        id="send-result"
-        class="mt-6"
-    >
-    </div>
-
+    <div id="send-result" class="mt-6"></div>
 </div>
 
 {% endblock %}

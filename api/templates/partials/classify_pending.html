@@ -1,0 +1,172 @@
+<div class="space-y-6">
+
+    <!-- Summary -->
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+
+        <div class="bg-white rounded-xl shadow-sm p-6">
+            <p class="text-sm text-gray-500">
+                Raw Buyers
+            </p>
+
+            <p class="text-3xl font-bold mt-2">
+                {{ buyers|length }}
+            </p>
+        </div>
+
+
+        <div class="bg-white rounded-xl shadow-sm p-6">
+            <p class="text-sm text-gray-500">
+                Pending Classification
+            </p>
+
+            <p class="text-3xl font-bold mt-2">
+                {{ buyers|length }}
+            </p>
+        </div>
+
+
+        <div class="bg-white rounded-xl shadow-sm p-6">
+
+            <p class="text-sm text-gray-500">
+                Status
+            </p>
+
+            {% if buyers %}
+
+                <p class="text-lg font-semibold mt-2">
+                    Waiting
+                </p>
+
+            {% else %}
+
+                <p class="text-lg font-semibold mt-2">
+                    Completed
+                </p>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <!-- Buyer List -->
+
+    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+
+        <div class="p-6 border-b">
+
+            <h3 class="text-lg font-semibold">
+                Unclassified Buyers
+            </h3>
+
+            <p class="text-sm text-gray-500 mt-1">
+                Buyers waiting to be classified.
+            </p>
+
+        </div>
+
+
+        {% if buyers %}
+
+            <div class="overflow-x-auto">
+
+                <table class="w-full text-sm">
+
+                    <thead class="bg-gray-50">
+
+                        <tr>
+
+                            <th class="text-left px-6 py-4">
+                                Company
+                            </th>
+
+                            <th class="text-left px-6 py-4">
+                                Email
+                            </th>
+
+                            <th class="text-left px-6 py-4">
+                                Country
+                            </th>
+
+                            <th class="text-left px-6 py-4">
+                                Website
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody class="divide-y">
+
+                        {% for buyer in buyers %}
+
+                            <tr class="hover:bg-gray-50">
+
+                                <td class="px-6 py-4 font-medium">
+                                    {{ buyer.company_name or "-" }}
+                                </td>
+
+
+                                <td class="px-6 py-4">
+                                    {{ buyer.email }}
+                                </td>
+
+
+                                <td class="px-6 py-4">
+                                    {{ buyer.country or "-" }}
+                                </td>
+
+
+                                <td class="px-6 py-4">
+
+                                    {% if buyer.website %}
+
+                                        <a
+                                            href="{{ buyer.website }}"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            class="text-blue-600 hover:underline"
+                                        >
+                                            {{ buyer.website }}
+                                        </a>
+
+                                    {% else %}
+
+                                        -
+
+                                    {% endif %}
+
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        {% else %}
+
+            <div class="p-8 text-center">
+
+                <p class="text-green-600 font-semibold">
+                    All buyers have been classified.
+                </p>
+
+                <p class="text-sm text-gray-500 mt-2">
+                    There are no pending buyers.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</div>

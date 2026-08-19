@@ -114,35 +114,227 @@ def search_page(request: Request):
 
 
 @app.post("/ui/search")
-def ui_search(request: Request, query: str = Form(...)):
+def ui_search(
+    request: Request,
+    query: str = Form(...),
+):
     query = query.strip()
 
     if not query:
-        return """
-        <div class="bg-red-50 text-red-700 rounded-xl p-5">
-            Query cannot be empty.
-        </div>
-        """
+        return templates.TemplateResponse(
+            request=request,
+            name="partials/error.html",
+            context={
+                "message": "Query cannot be empty.",
+            },
+        )
 
     try:
-        search = TavilySearch()
-        results = search.search(query)
+        tavily = TavilySearch()
+        website_search = WebsiteSearch()
+        extractor = DataExtractor()
+        validator = EmailValidator()
+
+        search_results = tavily.search(query)
+
+        buyers = []
+
+        for search_result in search_results:
+            url = search_result.get(
+                "url",
+                "",
+            )
+
+            if not url:
+                continue
+
+            try:
+                website_results = website_search.search(url)
+
+            except Exception:
+                continue
+
+            for website_result in website_results:
+                records = extractor.extract_buyer(
+                    content=website_result.get(
+                        "content",
+                        "",
+                    ),
+                    html=website_result.get(
+                        "html",
+                        "",
+                    ),
+                    website=website_result.get(
+                        "url",
+                        url,
+                    ),
+                    source_platform="Tavily",
+                )
+
+                valid_records, _ = validator.validate_records(records)
+
+                buyers.extend(valid_records)
+
+        # Deduplicate by email
+        unique_buyers = {}
+
+        for buyer in buyers:
+            email = (
+                buyer.get(
+                    "email",
+                    "",
+                )
+                .strip()
+                .lower()
+            )
+
+            if email and email not in unique_buyers:
+                unique_buyers[email] = buyer
+
+        buyers = list(unique_buyers.values())
 
         return templates.TemplateResponse(
             request=request,
             name="partials/search_results.html",
             context={
                 "query": query,
-                "results": results,
+                "buyers": buyers,
             },
         )
 
     except Exception as error:
-        return f"""
-        <div class="bg-red-50 text-red-700 rounded-xl p-5">
-            Search failed: {error}
-        </div>
-        """
+        return templates.TemplateResponse(
+            request=request,
+            name="partials/error.html",
+            context={
+                "message": str(error),
+            },
+        )
+
+
+@app.post("/ui/search/save")
+def save_search_buyer(
+    request: Request,
+    email: str = Form(...),
+    buyer_name: str = Form(""),
+    company_name: str = Form(""),
+    website: str = Form(""),
+    country: str = Form(""),
+    source_platform: str = Form("Tavily"),
+):
+    try:
+        email = email.strip().lower()
+
+        if not email:
+            return templates.TemplateResponse(
+                request=request,
+                name="partials/error.html",
+                context={
+                    "message": "Buyer email is required.",
+                },
+            )
+
+        buyers_file = Path("data/buyers.csv")
+
+        buyers_file.parent.mkdir(
+            parents=True,
+            exist_ok=True,
+        )
+
+        fieldnames = [
+            "email",
+            "buyer_name",
+            "company_name",
+            "website",
+            "country",
+            "source_platform",
+        ]
+
+        existing = []
+
+        if buyers_file.exists():
+            with buyers_file.open(
+                "r",
+                encoding="utf-8",
+                newline="",
+            ) as file:
+                existing = list(csv.DictReader(file))
+
+        # Check duplicate
+        already_exists = any(
+            row.get("email", "").strip().lower() == email for row in existing
+        )
+
+        if already_exists:
+            buyer = {
+                "email": email,
+                "buyer_name": buyer_name,
+                "company_name": company_name,
+                "website": website,
+                "country": country,
+                "source_platform": source_platform,
+            }
+
+            return templates.TemplateResponse(
+                request=request,
+                name="partials/saved_buyer.html",
+                context={
+                    "buyer": buyer,
+                    "message": "Already saved",
+                },
+            )
+
+        # Add buyer
+        existing.append(
+            {
+                "email": email,
+                "buyer_name": buyer_name,
+                "company_name": company_name,
+                "website": website,
+                "country": country,
+                "source_platform": source_platform,
+            }
+        )
+
+        with buyers_file.open(
+            "w",
+            encoding="utf-8",
+            newline="",
+        ) as file:
+            writer = csv.DictWriter(
+                file,
+                fieldnames=fieldnames,
+            )
+
+            writer.writeheader()
+            writer.writerows(existing)
+
+        buyer = {
+            "email": email,
+            "buyer_name": buyer_name,
+            "company_name": company_name,
+            "website": website,
+            "country": country,
+            "source_platform": source_platform,
+        }
+
+        return templates.TemplateResponse(
+            request=request,
+            name="partials/saved_buyer.html",
+            context={
+                "buyer": buyer,
+                "message": "Saved",
+            },
+        )
+
+    except Exception as error:
+        return templates.TemplateResponse(
+            request=request,
+            name="partials/error.html",
+            context={
+                "message": str(error),
+            },
+        )
 
 
 @app.post("/api/discover")
@@ -308,13 +500,17 @@ async def ui_upload(request: Request, file: UploadFile = File(...)):
             "duplicates_removed": (len(combined) - len(unique)),
         }
 
-        return templates.TemplateResponse(
-            request,
+        response = templates.TemplateResponse(
+            request=request,
             name="partials/upload_result.html",
             context={
                 "result": result,
             },
         )
+
+        response.headers["HX-Trigger"] = "buyersUpdated"
+
+        return response
 
     except UnicodeDecodeError:
         return templates.TemplateResponse(
@@ -418,6 +614,36 @@ def ui_classify(request: Request):
         )
 
 
+@app.get("/api/buyers")
+def get_buyers():
+    buyers_file = Path("data/buyers.csv")
+
+    if not buyers_file.exists():
+        return {
+            "total": 0,
+            "buyers": [],
+        }
+
+    try:
+        with buyers_file.open(
+            "r",
+            encoding="utf-8",
+            newline="",
+        ) as file:
+            readers = list(csv.DictReader(file))
+
+        return {
+            "total": len(readers),
+            "buyers": readers,
+        }
+
+    except Exception as error:
+        raise HTTPException(
+            status_code=500,
+            detail=str(error),
+        )
+
+
 @app.post("/api/classify")
 def classify_buyers():
     try:
@@ -483,6 +709,128 @@ def classify_buyers():
         )
 
 
+@app.get("/api/classify/status")
+def classify_status():
+
+    buyers_file = Path("data/buyers.csv")
+
+    business_file = Path("data/business_emails.csv")
+
+    individual_file = Path("data/individual_emails.csv")
+
+    total = 0
+    business = 0
+    individual = 0
+
+    if buyers_file.exists():
+        with buyers_file.open(
+            "r",
+            encoding="utf-8",
+            newline="",
+        ) as file:
+            total = sum(1 for _ in csv.DictReader(file))
+
+    if business_file.exists():
+        with business_file.open(
+            "r",
+            encoding="utf-8",
+            newline="",
+        ) as file:
+            business = sum(1 for _ in csv.DictReader(file))
+
+    if individual_file.exists():
+        with individual_file.open(
+            "r",
+            encoding="utf-8",
+            newline="",
+        ) as file:
+            individual = sum(1 for _ in csv.DictReader(file))
+
+    classified = business + individual
+
+    return {
+        "total": total,
+        "classified": classified,
+        "unclassified": max(
+            total - classified,
+            0,
+        ),
+        "business": business,
+        "individual": individual,
+    }
+
+
+@app.get("/ui/classify/pending")
+def ui_classify_pending(request: Request):
+    try:
+        buyers_file = Path("data/buyers.csv")
+
+        if not buyers_file.exists():
+            return templates.TemplateResponse(
+                request=request,
+                name="partials/classify_pending.html",
+                context={
+                    "buyers": [],
+                },
+            )
+
+        with buyers_file.open(
+            "r",
+            encoding="utf-8",
+            newline="",
+        ) as file:
+            buyers = list(csv.DictReader(file))
+
+        classified_emails = set()
+
+        for file_path in [
+            Path("data/business_emails.csv"),
+            Path("data/individual_emails.csv"),
+        ]:
+            if not file_path.exists():
+                continue
+
+            with file_path.open(
+                "r",
+                encoding="utf-8",
+                newline="",
+            ) as file:
+                for row in csv.DictReader(file):
+                    email = row.get("email", "").strip().lower()
+
+                    if email:
+                        classified_emails.add(email)
+
+        pending = [
+            buyer
+            for buyer in buyers
+            if buyer.get(
+                "email",
+                "",
+            )
+            .strip()
+            .lower()
+            not in classified_emails
+        ]
+
+        return templates.TemplateResponse(
+            request=request,
+            name="partials/classify_pending.html",
+            context={
+                "buyers": pending,
+            },
+        )
+
+    except Exception as error:
+        return templates.TemplateResponse(
+            request=request,
+            name="partials/error.html",
+            context={
+                "message": str(error),
+            },
+        )
+
+
 @app.get("/send")
 def send_page(request: Request):
     return templates.TemplateResponse(
@@ -490,6 +838,84 @@ def send_page(request: Request):
         name="send.html",
         context={},
     )
+
+
+@app.get("/api/send/status")
+def send_status():
+    business_file = Path("data/business_emails.csv")
+
+    individual_file = Path("data/individual_emails.csv")
+
+    business = 0
+    individual = 0
+
+    if business_file.exists():
+        with business_file.open(
+            "r",
+            encoding="utf-8",
+            newline="",
+        ) as file:
+            business = sum(1 for _ in csv.DictReader(file))
+
+    if individual_file.exists():
+        with individual_file.open(
+            "r",
+            encoding="utf-8",
+            newline="",
+        ) as file:
+            individual = sum(1 for _ in csv.DictReader(file))
+
+    return {
+        "business": business,
+        "individual": individual,
+        "total": business + individual,
+    }
+
+
+@app.get("/ui/send/status")
+def ui_send_status(request: Request):
+    try:
+        business_file = Path("data/business_emails.csv")
+
+        individual_file = Path("data/individual_emails.csv")
+
+        business = 0
+        individual = 0
+
+        if business_file.exists():
+            with business_file.open(
+                "r",
+                encoding="utf-8",
+                newline="",
+            ) as file:
+                business = sum(1 for _ in csv.DictReader(file))
+
+        if individual_file.exists():
+            with individual_file.open(
+                "r",
+                encoding="utf-8",
+                newline="",
+            ) as file:
+                individual = sum(1 for _ in csv.DictReader(file))
+
+        return templates.TemplateResponse(
+            request=request,
+            name="partials/send_status.html",
+            context={
+                "business": business,
+                "individual": individual,
+                "total": business + individual,
+            },
+        )
+
+    except Exception as error:
+        return templates.TemplateResponse(
+            request=request,
+            name="partials/error.html",
+            context={
+                "message": str(error),
+            },
+        )
 
 
 @app.post("/ui/send")
@@ -742,6 +1168,45 @@ def upload_page(request: Request):
             "request": request,
         },
     )
+
+
+@app.get("/ui/buyers")
+def ui_buyers(request: Request):
+    buyers_file = Path("data/buyers.csv")
+
+    try:
+        if not buyers_file.exists():
+            return templates.TemplateResponse(
+                request=request,
+                name="partials/buyers_table.html",
+                context={
+                    "buyers": [],
+                },
+            )
+
+        with buyers_file.open(
+            "r",
+            encoding="utf-8",
+            newline="",
+        ) as file:
+            buyers = list(csv.DictReader(file))
+
+        return templates.TemplateResponse(
+            request=request,
+            name="partials/buyers_table.html",
+            context={
+                "buyers": buyers,
+            },
+        )
+
+    except Exception as error:
+        return templates.TemplateResponse(
+            request=request,
+            name="partials/error.html",
+            context={
+                "message": str(error),
+            },
+        )
 
 
 @app.post("/api/upload")
