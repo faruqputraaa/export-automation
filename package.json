@@ -1,0 +1,23 @@
+{
+  "name": "export-automation-system",
+  "version": "1.0.0",
+  "description": "Automation pipeline untuk membantu proses **buyer discovery dan export outreach** untuk produk.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/faruqputraaa/export-automation.git"
+  },
+  "keywords": [],
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/faruqputraaa/export-automation/issues"
+  },
+  "homepage": "https://github.com/faruqputraaa/export-automation#readme",
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.3.3",
+    "tailwindcss": "^4.3.3"
+  }
+}

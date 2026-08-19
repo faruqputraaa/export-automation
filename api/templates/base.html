@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        {% block title %}
+        Export Automation
+        {% endblock %}
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', path='css/app.css') }}"
+    >
+
+    <script
+        src="https://unpkg.com/htmx.org@2.0.6"
+    ></script>
+    <style>
+        .htmx-indicator {
+            display: none;
+        }
+    
+        .htmx-request .htmx-indicator,
+        .htmx-request.htmx-indicator {
+            display: flex;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 text-gray-900">
+    <div
+        id="loading"
+        class="htmx-indicator fixed inset-0 z-50 items-center justify-center bg-black/40 backdrop-blur-sm"
+    >
+        <div class="bg-white rounded-xl shadow-xl px-6 py-5 flex items-center gap-4">
+    
+            <div class="w-6 h-6 border-4 border-gray-200 border-t-gray-900 rounded-full animate-spin"></div>
+    
+            <div>
+                <p class="font-semibold">
+                    Processing...
+                </p>
+    
+                <p class="text-sm text-gray-500">
+                    Please wait.
+                </p>
+            </div>
+    
+        </div>
+    </div>
+<div class="min-h-screen flex">
+
+    <!-- Sidebar -->
+
+    <aside class="w-64 bg-gray-900 text-white p-5">
+
+        <h1 class="text-xl font-bold mb-8">
+            Export Automation
+        </h1>
+
+        <nav class="space-y-2">
+
+            <a
+                href="/"
+                class="block rounded-lg px-4 py-3 hover:bg-gray-800"
+            >
+                Home
+            </a>
+
+            <a
+                href="/search"
+                class="block rounded-lg px-4 py-3 hover:bg-gray-800"
+            >
+                Search
+            </a>
+
+            <a
+                href="/upload"
+                class="block rounded-lg px-4 py-3 hover:bg-gray-800"
+            >
+                Upload
+            </a>
+
+            <a
+                href="/classify"
+                class="block rounded-lg px-4 py-3 hover:bg-gray-800"
+            >
+                Classify
+            </a>
+
+            <a
+                href="/send"
+                class="block rounded-lg px-4 py-3 hover:bg-gray-800"
+            >
+                Send
+            </a>
+
+            <a
+                href="/report"
+                class="block rounded-lg px-4 py-3 hover:bg-gray-800"
+            >
+                Report
+            </a>
+
+            <a
+                href="/settings"
+                class="block rounded-lg px-4 py-3 hover:bg-gray-800"
+            >
+                Settings
+            </a>
+
+        </nav>
+
+    </aside>
+
+
+    <!-- Main -->
+
+    <main class="flex-1 p-8">
+
+        {% block content %}
+        {% endblock %}
+
+    </main>
+
+</div>
+
+</body>
+</html>

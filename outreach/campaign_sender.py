@@ -1,6 +1,7 @@
 import csv
 from pathlib import Path
 from typing import Any
+import time
 
 
 class CampaignSender:
@@ -8,11 +9,13 @@ class CampaignSender:
         self,
         sender,
         logger,
-        daily_limit: int = 100
+        daily_limit: int = 100,
+        send_delay: float = 0
     ):
         self.sender = sender
         self.logger = logger
         self.daily_limit = daily_limit
+        self.send_delay = send_delay
 
     def load_emails(self, file_path: str) -> list[str]:
         """
@@ -101,10 +104,13 @@ class CampaignSender:
                     email,
                     "sent"
                 )
-    
+            
                 result["sent"] += 1
-    
+            
                 print(f"SENT: {email}")
+            
+                if self.send_delay > 0:
+                    time.sleep(self.send_delay)
     
             else:
                 self.logger.log_send(

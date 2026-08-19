@@ -1,0 +1,65 @@
+<div class="space-y-4">
+
+    <div class="flex items-center justify-between">
+
+        <div>
+            <h3 class="text-xl font-semibold">
+                Search Results
+            </h3>
+
+            <p class="text-sm text-gray-500">
+                Query: {{ query }}
+            </p>
+        </div>
+
+        <span class="text-sm text-gray-500">
+            {{ results|length }} results
+        </span>
+
+    </div>
+
+
+    {% if results %}
+
+        {% for result in results %}
+
+        <div class="bg-white rounded-xl shadow-sm p-5">
+
+            <h4 class="font-semibold text-lg">
+                {{ result.title }}
+            </h4>
+
+            {% if result.url %}
+
+            <a
+                href="{{ result.url }}"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-sm text-blue-600 hover:underline break-all"
+            >
+                {{ result.url }}
+            </a>
+
+            {% endif %}
+
+            {% if result.content %}
+
+            <p class="text-gray-600 text-sm mt-3">
+                {{ result.content }}
+            </p>
+
+            {% endif %}
+
+        </div>
+
+        {% endfor %}
+
+    {% else %}
+
+        <div class="bg-white rounded-xl p-6 text-gray-500">
+            No results found.
+        </div>
+
+    {% endif %}
+
+</div>

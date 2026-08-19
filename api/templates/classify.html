@@ -1,0 +1,42 @@
+{% extends "base.html" %} {% block title %} Classify - Export Automation {%
+endblock %} {% block content %}
+
+<div class="max-w-5xl">
+    <div class="mb-8">
+        <h2 class="text-3xl font-bold">Email Classification</h2>
+
+        <p class="text-gray-500 mt-2">
+            Classify buyer emails into business and individual audiences.
+        </p>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm p-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="font-medium">Run AI Classification</p>
+
+                <p class="text-sm text-gray-500 mt-1">
+                    Emails are classified using Gemini.
+                </p>
+            </div>
+
+            <button
+                hx-post="/ui/classify"
+                hx-target="#classify-result"
+                hx-swap="innerHTML"
+                hx-indicator="#loading"
+                class="bg-gray-900 text-white px-6 py-3 rounded-lg hover:bg-gray-800 disabled:opacity-50"
+            >
+                Run Classification
+            </button>
+        </div>
+    </div>
+
+    <div id="classify-result" class="mt-6">
+        <div class="bg-white rounded-xl p-6 text-gray-500">
+            Classification has not been run yet.
+        </div>
+    </div>
+</div>
+
+{% endblock %}

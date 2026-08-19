@@ -134,7 +134,10 @@ def run_classification():
 
 def run_send(
     audience: str,
-    dry_run: bool = False
+    subject: str,
+    body: str,
+    attachment_path: str | None = None,
+    dry_run: bool = False,
 ):
     load_dotenv()
 
@@ -181,7 +184,8 @@ def run_send(
             sender_name=os.getenv(
                 "BREVO_SENDER_NAME",
                 "Export Automation"
-            )
+            ),
+            auth=auth
         )
 
     # =========================
@@ -205,14 +209,15 @@ def run_send(
     # ATTACHMENT
     # =========================
 
-    attachment = Path(
-        "assets/company_presentation.pdf"
-    )
-
-    if not attachment.exists():
-        raise FileNotFoundError(
-            f"Attachment tidak ditemukan: {attachment}"
-        )
+    attachment = None
+    
+    if attachment_path:
+        attachment = Path(attachment_path)
+    
+        if not attachment.exists():
+            raise FileNotFoundError(
+                f"Attachment tidak ditemukan: {attachment}"
+            )
 
     # =========================
     # CAMPAIGN
@@ -228,22 +233,10 @@ def run_send(
 
         result = campaign.send_campaign(
             file_path=email_file,
-            subject="Singing Bowls Company Presentation",
-            body="""\
-Hello,
-
-We are an export supplier of Himalayan Singing Bowls.
-
-Please find our company presentation attached.
-
-If you are interested in our products,
-please feel free to contact us.
-
-Best regards,
-Export Automation
-""",
+            subject=subject,
+            body=body,
             attachment=attachment,
-            dry_run=dry_run
+            dry_run=dry_run,
         )
 
         for key in [

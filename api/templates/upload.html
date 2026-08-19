@@ -1,0 +1,57 @@
+{% extends "base.html" %} {% block title %} Upload - Export Automation {%
+endblock %} {% block content %}
+
+<div class="max-w-5xl">
+    <div class="mb-8">
+        <h2 class="text-3xl font-bold">Upload Buyers</h2>
+
+        <p class="text-gray-500 mt-2">Import buyer records from a CSV file.</p>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm p-6">
+        <form
+            hx-post="/ui/upload"
+            hx-target="#upload-result"
+            hx-swap="innerHTML"
+            hx-encoding="multipart/form-data"
+            hx-indicator="#loading"
+        >
+            <label class="block text-sm font-medium mb-2"> CSV File </label>
+
+            <input
+                type="file"
+                name="file"
+                accept=".csv"
+                required
+                class="block w-full border border-gray-300 rounded-lg p-3"
+            />
+
+            <button
+                type="submit"
+                class="mt-5 bg-gray-900 text-white px-6 py-3 rounded-lg hover:bg-gray-800"
+            >
+                Upload CSV
+            </button>
+        </form>
+    </div>
+
+    <div id="upload-result" class="mt-6"></div>
+
+    <div class="mt-6 bg-white rounded-xl shadow-sm p-6">
+        <h3 class="text-lg font-semibold mb-4">CSV Format</h3>
+
+        <p class="text-sm text-gray-500 mb-4">
+            The required field is <strong>email</strong>. Other fields are
+            optional.
+        </p>
+
+        <pre
+            class="bg-gray-900 text-gray-100 rounded-lg p-4 text-sm overflow-x-auto"
+        >
+email,buyer_name,company_name,website,country,source_platform
+buyer@example.com,John,ABC Trading,https://example.com,USA,Upload
+sales@example.com,,XYZ Trading,https://xyz.com,India,Upload</pre>
+    </div>
+</div>
+
+{% endblock %}

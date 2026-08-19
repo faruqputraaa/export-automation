@@ -1,0 +1,53 @@
+<div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+
+    <div class="bg-white rounded-xl shadow-sm p-6">
+        <p class="text-sm text-gray-500">
+            Total Emails
+        </p>
+
+        <p class="text-3xl font-bold mt-2">
+            {{ result.total }}
+        </p>
+    </div>
+
+
+    <div class="bg-white rounded-xl shadow-sm p-6">
+
+        <p class="text-sm text-gray-500">
+            Business
+        </p>
+
+        <p class="text-3xl font-bold mt-2">
+            {{ result.business }}
+        </p>
+
+        <p class="text-sm text-gray-500 mt-2">
+            Saved to business_emails.csv
+        </p>
+
+    </div>
+
+
+    <div class="bg-white rounded-xl shadow-sm p-6">
+
+        <p class="text-sm text-gray-500">
+            Individual
+        </p>
+
+        <p class="text-3xl font-bold mt-2">
+            {{ result.individual }}
+        </p>
+
+        <p class="text-sm text-gray-500 mt-2">
+            Saved to individual_emails.csv
+        </p>
+
+    </div>
+
+</div>
+
+<div class="bg-green-50 border border-green-200 text-green-700 rounded-xl p-5 mt-5">
+
+    Classification completed successfully.
+
+</div>

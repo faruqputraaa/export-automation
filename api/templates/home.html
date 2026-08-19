@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}
+Home - Export Automation
+{% endblock %}
+
+{% block content %}
+
+<h2 class="text-3xl font-bold mb-2">
+    Dashboard
+</h2>
+
+<p class="text-gray-500 mb-8">
+    Export buyer discovery and outreach automation.
+</p>
+
+<div class="grid grid-cols-1 md:grid-cols-4 gap-5">
+
+    <div class="bg-white rounded-xl p-6 shadow-sm">
+        <p class="text-gray-500">Total</p>
+        <p class="text-3xl font-bold">
+            {{ stats.total }}
+        </p>
+    </div>
+
+    <div class="bg-white rounded-xl p-6 shadow-sm">
+        <p class="text-gray-500">Sent</p>
+        <p class="text-3xl font-bold">
+            {{ stats.sent }}
+        </p>
+    </div>
+
+    <div class="bg-white rounded-xl p-6 shadow-sm">
+        <p class="text-gray-500">Skipped</p>
+        <p class="text-3xl font-bold">
+            {{ stats.skipped }}
+        </p>
+    </div>
+
+    <div class="bg-white rounded-xl p-6 shadow-sm">
+        <p class="text-gray-500">Failed</p>
+        <p class="text-3xl font-bold">
+            {{ stats.failed }}
+        </p>
+    </div>
+
+</div>
+
+{% endblock %} 

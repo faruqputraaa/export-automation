@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}
+Search - Export Automation
+{% endblock %}
+
+{% block content %}
+
+<div class="max-w-5xl">
+
+    <div class="mb-8">
+        <h2 class="text-3xl font-bold">
+            Buyer Search
+        </h2>
+
+        <p class="text-gray-500 mt-2">
+            Search for potential buyers using configured sources.
+        </p>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm p-6">
+
+        <form
+            hx-post="/ui/search"
+            hx-target="#search-result"
+            hx-swap="innerHTML"
+            class="flex gap-3"
+        >
+
+            <input
+                type="text"
+                name="query"
+                placeholder="singing bowls suppliers"
+                required
+                class="flex-1 border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-gray-400"
+            >
+
+            <button
+                type="submit"
+                class="bg-gray-900 text-white px-6 py-3 rounded-lg hover:bg-gray-800"
+            >
+                Search
+            </button>
+
+        </form>
+
+    </div>
+
+    <div
+        id="search-result"
+        class="mt-6"
+    >
+        <div class="bg-white rounded-xl p-6 text-gray-500">
+            Enter a query to search for buyers.
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,17 +1,21 @@
 from email.message import EmailMessage
 from pathlib import Path
+import smtplib
 
 
 class BrevoSender:
+
     def __init__(
         self,
         smtp,
         sender_email: str,
-        sender_name: str
+        sender_name: str,
+        auth=None
     ):
         self.smtp = smtp
         self.sender_email = sender_email
         self.sender_name = sender_name
+        self.auth = auth
 
     def send(
         self,
@@ -46,6 +50,38 @@ class BrevoSender:
             self.smtp.send_message(message)
             return True
 
+        except smtplib.SMTPServerDisconnected as error:
+            print(
+                f"SMTP disconnected "
+                f"while sending to {receiver}: {error}"
+            )
+
+            if not self.auth:
+                return False
+
+            try:
+                print("Reconnecting to Brevo SMTP...")
+
+                self.smtp = self.auth.connect()
+
+                print("Retrying send...")
+
+                self.smtp.send_message(message)
+
+                return True
+
+            except Exception as retry_error:
+                print(
+                    f"Retry failed for {receiver}: "
+                    f"{retry_error}"
+                )
+
+                return False
+
         except Exception as error:
-            print(f"Gagal mengirim ke {receiver}: {error}")
+            print(
+                f"Gagal mengirim ke "
+                f"{receiver}: {error}"
+            )
+
             return False

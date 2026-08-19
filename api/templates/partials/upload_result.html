@@ -1,0 +1,48 @@
+<div class="bg-white rounded-xl shadow-sm p-6">
+
+    <h3 class="text-lg font-semibold mb-5">
+        Upload Result
+    </h3>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+        <div class="bg-gray-50 rounded-lg p-4">
+            <p class="text-sm text-gray-500">
+                Uploaded
+            </p>
+
+            <p class="text-2xl font-bold">
+                {{ result.uploaded_records }}
+            </p>
+        </div>
+
+        <div class="bg-gray-50 rounded-lg p-4">
+            <p class="text-sm text-gray-500">
+                Total Records
+            </p>
+
+            <p class="text-2xl font-bold">
+                {{ result.total_records }}
+            </p>
+        </div>
+
+        <div class="bg-gray-50 rounded-lg p-4">
+            <p class="text-sm text-gray-500">
+                Duplicates Removed
+            </p>
+
+            <p class="text-2xl font-bold">
+                {{ result.duplicates_removed }}
+            </p>
+        </div>
+
+    </div>
+
+    <p class="text-sm text-gray-500 mt-5">
+        File:
+        <span class="font-medium">
+            {{ result.filename }}
+        </span>
+    </p>
+
+</div>

@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Export Automation System</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f7fb;
+            color: #1f2937;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 32px 20px;
+        }
+
+        h1 {
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            color: #6b7280;
+            margin-bottom: 30px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 22px;
+            box-shadow: 0 2px 10px rgba(0,0,0,.06);
+        }
+
+        .card h2 {
+            margin-top: 0;
+            font-size: 18px;
+        }
+
+        label {
+            display: block;
+            margin-top: 12px;
+            margin-bottom: 6px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 7px;
+            font: inherit;
+        }
+
+        textarea {
+            min-height: 130px;
+            resize: vertical;
+        }
+
+        button {
+            margin-top: 15px;
+            padding: 10px 16px;
+            border: 0;
+            border-radius: 7px;
+            background: #111827;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            opacity: .9;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .stat {
+            background: white;
+            padding: 18px;
+            border-radius: 10px;
+        }
+
+        .stat strong {
+            display: block;
+            font-size: 24px;
+        }
+
+        pre {
+            white-space: pre-wrap;
+            background: #111827;
+            color: #e5e7eb;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+
+        .full {
+            grid-column: 1 / -1;
+        }
+
+        @media (max-width: 700px) {
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Export Automation System</h1>
+    <p class="subtitle">
+        Buyer discovery and export outreach automation
+    </p>
+
+    <div class="stats">
+        <div class="stat">
+            <small>Total</small>
+            <strong id="total">0</strong>
+        </div>
+
+        <div class="stat">
+            <small>Sent</small>
+            <strong id="sent">0</strong>
+        </div>
+
+        <div class="stat">
+            <small>Skipped</small>
+            <strong id="skipped">0</strong>
+        </div>
+
+        <div class="stat">
+            <small>Failed</small>
+            <strong id="failed">0</strong>
+        </div>
+    </div>
+
+    <div class="grid">
+
+        <!-- DISCOVERY -->
+
+        <div class="card">
+            <h2>Buyer Discovery</h2>
+
+            <label>Search Query</label>
+
+            <input
+                id="searchQuery"
+                type="text"
+                placeholder="singing bowls suppliers"
+            >
+
+            <button onclick="discover()">
+                Discover Buyers
+            </button>
+
+            <pre id="discoverResult">Waiting...</pre>
+        </div>
+
+
+        <!-- CLASSIFICATION -->
+
+        <div class="card">
+
+            <h2>Classification</h2>
+
+            <p>
+                Classify discovered emails into
+                business and individual audiences.
+            </p>
+
+            <button onclick="classify()">
+                Run Classification
+            </button>
+
+            <pre id="classifyResult">Waiting...</pre>
+
+        </div>
+        <div class="card">
+        
+            <h2>Upload Buyers CSV</h2>
+        
+            <p>
+                Upload a CSV containing buyer records.
+            </p>
+        
+            <input
+                id="csvFile"
+                type="file"
+                accept=".csv"
+            >
+        
+            <button onclick="uploadCSV()">
+                Upload CSV
+            </button>
+        
+            <pre id="uploadResult">Waiting...</pre>
+        
+        </div>
+
+        <!-- SEND -->
+
+        <div class="card full">
+
+            <h2>Send Campaign</h2>
+
+            <label>Audience</label>
+
+            <select id="audience">
+                <option value="business">Business</option>
+                <option value="individual">Individual</option>
+                <option value="all">All</option>
+            </select>
+
+
+            <label>Subject</label>
+
+            <input
+                id="subject"
+                type="text"
+                value="Singing Bowls Company Presentation"
+            >
+
+
+            <label>Body</label>
+
+            <textarea id="body">Hello,
+
+We are an export supplier of Himalayan Singing Bowls.
+
+Please find our company presentation attached.
+
+If you are interested in our products,
+please feel free to contact us.
+
+Best regards,
+Export Automation</textarea>
+
+
+            <label>PDF Attachment</label>
+
+            <input
+                id="attachment"
+                type="text"
+                value="assets/company_presentation.pdf"
+            >
+
+
+            <label>
+                <input
+                    id="dryRun"
+                    type="checkbox"
+                    checked
+                    style="width:auto"
+                >
+                Dry Run
+            </label>
+
+
+            <button onclick="sendCampaign()">
+                Send Campaign
+            </button>
+
+            <pre id="sendResult">Waiting...</pre>
+
+        </div>
+
+
+        <!-- REPORT -->
+
+        <div class="card full">
+
+            <h2>Latest Report</h2>
+
+            <button onclick="loadReport()">
+                Refresh Report
+            </button>
+
+            <a
+                href="/download-report"
+                style="margin-left:10px;"
+            >
+                Download Report
+            </a>
+
+            <pre id="reportResult">Waiting...</pre>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+async function discover() {
+
+    const query =
+        document.getElementById("searchQuery").value;
+
+    if (!query.trim()) {
+        alert("Search query is required.");
+        return;
+    }
+
+    const response = await fetch("/api/discover", {
+        method: "POST",
+
+        headers: {
+            "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+            query: query
+        })
+    });
+
+    const data = await response.json();
+
+    document.getElementById(
+        "discoverResult"
+    ).textContent =
+        JSON.stringify(data, null, 2);
+}
+
+
+async function classify() {
+
+    const response = await fetch("/api/classify", {
+        method: "POST"
+    });
+
+    const data = await response.json();
+
+    document.getElementById(
+        "classifyResult"
+    ).textContent =
+        JSON.stringify(data, null, 2);
+}
+
+
+async function sendCampaign() {
+
+    const request = {
+
+        audience:
+            document.getElementById(
+                "audience"
+            ).value,
+
+        subject:
+            document.getElementById(
+                "subject"
+            ).value,
+
+        body:
+            document.getElementById(
+                "body"
+            ).value,
+
+        attachment:
+            document.getElementById(
+                "attachment"
+            ).value || null,
+
+        dry_run:
+            document.getElementById(
+                "dryRun"
+            ).checked
+    };
+
+
+    const response = await fetch("/api/send", {
+
+        method: "POST",
+
+        headers: {
+            "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify(request)
+    });
+
+
+    const data = await response.json();
+
+
+    document.getElementById(
+        "sendResult"
+    ).textContent =
+        JSON.stringify(data, null, 2);
+
+
+    updateStats(data);
+}
+
+async function uploadCSV() {
+
+    const fileInput =
+        document.getElementById("csvFile");
+
+    if (!fileInput.files.length) {
+        alert("Please select a CSV file.");
+        return;
+    }
+
+    const formData =
+        new FormData();
+
+    formData.append(
+        "file",
+        fileInput.files[0]
+    );
+
+    const response = await fetch(
+        "/api/upload",
+        {
+            method: "POST",
+            body: formData
+        }
+    );
+
+    const data =
+        await response.json();
+
+    document.getElementById(
+        "uploadResult"
+    ).textContent =
+        JSON.stringify(
+            data,
+            null,
+            2
+        );
+}
+
+async function loadReport() {
+
+    const response =
+        await fetch("/api/report");
+
+    const data =
+        await response.json();
+
+
+    document.getElementById(
+        "reportResult"
+    ).textContent =
+        data.report;
+
+
+    if (data.result) {
+        updateStats(data.result);
+    }
+}
+
+
+function updateStats(data) {
+
+    if (data.total !== undefined) {
+        document.getElementById(
+            "total"
+        ).textContent = data.total;
+    }
+
+    if (data.sent !== undefined) {
+        document.getElementById(
+            "sent"
+        ).textContent = data.sent;
+    }
+
+    if (data.skipped !== undefined) {
+        document.getElementById(
+            "skipped"
+        ).textContent = data.skipped;
+    }
+
+    if (data.failed !== undefined) {
+        document.getElementById(
+            "failed"
+        ).textContent = data.failed;
+    }
+}
+
+
+loadReport();
+
+</script>
+
+</body>
+</html>

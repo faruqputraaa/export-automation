@@ -22,3 +22,12 @@ Thumbs.db
 # Generated data
 data/*.csv
 reports/*.txt
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+test*

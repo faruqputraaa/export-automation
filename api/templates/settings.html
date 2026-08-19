@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+
+{% block title %}
+Settings - Export Automation
+{% endblock %}
+
+{% block content %}
+
+<div class="max-w-4xl">
+
+    <div class="mb-8">
+        <h2 class="text-3xl font-bold">
+            Settings
+        </h2>
+
+        <p class="text-gray-500 mt-2">
+            Configure campaign behavior and default email content.
+        </p>
+    </div>
+
+
+    <form
+        hx-post="/ui/settings"
+        hx-target="#settings-result"
+        hx-swap="innerHTML"
+        hx-indicator="#loading"
+        class="bg-white rounded-xl shadow-sm p-6"
+    >
+
+        <!-- Daily Limit -->
+
+        <div class="mb-6">
+
+            <label class="block text-sm font-medium mb-2">
+                Daily Send Limit
+            </label>
+
+            <input
+                type="number"
+                name="daily_limit"
+                min="1"
+                value="{{ daily_limit }}"
+                required
+                class="w-full border border-gray-300 rounded-lg px-4 py-3"
+            >
+
+            <p class="text-sm text-gray-500 mt-2">
+                Maximum number of emails that can be sent per campaign run.
+            </p>
+
+        </div>
+
+
+        <!-- Delay -->
+
+        <div class="mb-6">
+
+            <label class="block text-sm font-medium mb-2">
+                Send Delay (seconds)
+            </label>
+
+            <input
+                type="number"
+                name="send_delay"
+                min="0"
+                step="0.1"
+                value="{{ send_delay }}"
+                required
+                class="w-full border border-gray-300 rounded-lg px-4 py-3"
+            >
+
+            <p class="text-sm text-gray-500 mt-2">
+                Delay between email deliveries.
+            </p>
+
+        </div>
+
+
+        <!-- Subject -->
+
+        <div class="mb-6">
+
+            <label class="block text-sm font-medium mb-2">
+                Default Email Subject
+            </label>
+
+            <input
+                type="text"
+                name="subject"
+                value="{{ subject }}"
+                required
+                class="w-full border border-gray-300 rounded-lg px-4 py-3"
+            >
+
+        </div>
+
+
+        <!-- Body -->
+
+        <div class="mb-6">
+
+            <label class="block text-sm font-medium mb-2">
+                Default Email Body
+            </label>
+
+            <textarea
+                name="body"
+                rows="12"
+                required
+                class="w-full border border-gray-300 rounded-lg px-4 py-3"
+            >{{ body }}</textarea>
+
+        </div>
+
+
+        <button
+            type="submit"
+            class="bg-gray-900 text-white px-6 py-3 rounded-lg hover:bg-gray-800"
+        >
+            Save Settings
+        </button>
+
+    </form>
+
+
+    <div
+        id="settings-result"
+        class="mt-6"
+    ></div>
+
+
+    <!-- Environment Information -->
+
+    <div class="bg-white rounded-xl shadow-sm p-6 mt-6">
+
+        <h3 class="text-lg font-semibold">
+            Environment Configuration
+        </h3>
+
+        <p class="text-sm text-gray-500 mt-2 mb-4">
+            API keys and SMTP credentials remain managed through the
+            environment configuration.
+        </p>
+
+        <div class="space-y-2 text-sm">
+
+            <div class="flex justify-between border-b py-3">
+                <span>Gemini API</span>
+                <span class="text-gray-500">Environment</span>
+            </div>
+
+            <div class="flex justify-between border-b py-3">
+                <span>Tavily API</span>
+                <span class="text-gray-500">Environment</span>
+            </div>
+
+            <div class="flex justify-between border-b py-3">
+                <span>Foursquare API</span>
+                <span class="text-gray-500">Environment</span>
+            </div>
+
+            <div class="flex justify-between py-3">
+                <span>Brevo SMTP</span>
+                <span class="text-gray-500">Environment</span>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+

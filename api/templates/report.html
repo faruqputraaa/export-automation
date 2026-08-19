@@ -1,0 +1,244 @@
+{% extends "base.html" %}
+
+{% block title %}
+Report - Export Automation
+{% endblock %}
+
+{% block content %}
+
+<div class="max-w-7xl">
+
+    <div class="flex items-start justify-between mb-8">
+
+        <div>
+            <h2 class="text-3xl font-bold">
+                Campaign Report
+            </h2>
+
+            <p class="text-gray-500 mt-2">
+                Review campaign performance and email history.
+            </p>
+        </div>
+
+        <a
+            href="/download-report"
+            class="bg-gray-900 text-white px-5 py-3 rounded-lg hover:bg-gray-800"
+        >
+            Download CSV
+        </a>
+
+    </div>
+
+
+    <!-- Statistics -->
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-5 mb-6">
+
+        <div class="bg-white rounded-xl shadow-sm p-6">
+            <p class="text-sm text-gray-500">
+                Total
+            </p>
+
+            <p class="text-3xl font-bold mt-2">
+                {{ result.total }}
+            </p>
+        </div>
+
+
+        <div class="bg-white rounded-xl shadow-sm p-6">
+            <p class="text-sm text-gray-500">
+                Sent
+            </p>
+
+            <p class="text-3xl font-bold mt-2">
+                {{ result.sent }}
+            </p>
+        </div>
+
+
+        <div class="bg-white rounded-xl shadow-sm p-6">
+            <p class="text-sm text-gray-500">
+                Skipped
+            </p>
+
+            <p class="text-3xl font-bold mt-2">
+                {{ result.skipped }}
+            </p>
+        </div>
+
+
+        <div class="bg-white rounded-xl shadow-sm p-6">
+            <p class="text-sm text-gray-500">
+                Failed
+            </p>
+
+            <p class="text-3xl font-bold mt-2">
+                {{ result.failed }}
+            </p>
+        </div>
+
+    </div>
+
+
+    <!-- Success Rate -->
+
+    {% set processed = result.sent + result.failed %}
+
+    {% if processed > 0 %}
+        {% set success_rate = (result.sent / processed * 100) %}
+    {% else %}
+        {% set success_rate = 0 %}
+    {% endif %}
+
+
+    <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+
+        <div class="flex items-center justify-between mb-3">
+
+            <div>
+                <h3 class="font-semibold">
+                    Success Rate
+                </h3>
+
+                <p class="text-sm text-gray-500">
+                    Successful sends compared to processed emails.
+                </p>
+            </div>
+
+            <span class="text-2xl font-bold">
+                {{ "%.2f"|format(success_rate) }}%
+            </span>
+
+        </div>
+
+
+        <div class="w-full bg-gray-200 rounded-full h-3">
+
+            <div
+                class="bg-gray-900 h-3 rounded-full"
+                style="width: {{ success_rate }}%"
+            ></div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Generated Report -->
+
+    <div class="bg-gray-900 text-gray-100 rounded-xl p-6 mb-6">
+
+        <h3 class="font-semibold mb-4">
+            Report Summary
+        </h3>
+
+        <pre class="whitespace-pre-wrap text-sm">{{ report }}</pre>
+
+    </div>
+
+
+    <!-- History -->
+
+    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+
+        <div class="p-6 border-b">
+
+            <h3 class="text-lg font-semibold">
+                Send History
+            </h3>
+
+            <p class="text-sm text-gray-500 mt-1">
+                Previous email delivery records.
+            </p>
+
+        </div>
+
+
+        {% if send_history %}
+
+        <div class="overflow-x-auto">
+
+            <table class="w-full text-sm">
+
+                <thead class="bg-gray-50">
+
+                    <tr>
+
+                        <th class="text-left px-6 py-4 font-medium">
+                            Email
+                        </th>
+
+                        <th class="text-left px-6 py-4 font-medium">
+                            Status
+                        </th>
+
+                        <th class="text-left px-6 py-4 font-medium">
+                            Timestamp
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody class="divide-y">
+
+                    {% for row in send_history %}
+
+                    <tr class="hover:bg-gray-50">
+
+                        <td class="px-6 py-4">
+                            {{ row.get("email", "") }}
+                        </td>
+
+                        <td class="px-6 py-4">
+
+                            {% if row.get("status") == "sent" %}
+
+                            <span class="px-2 py-1 rounded-full bg-green-100 text-green-700">
+                                Sent
+                            </span>
+
+                            {% elif row.get("status") == "failed" %}
+
+                            <span class="px-2 py-1 rounded-full bg-red-100 text-red-700">
+                                Failed
+                            </span>
+
+                            {% else %}
+
+                            <span class="px-2 py-1 rounded-full bg-gray-100 text-gray-700">
+                                {{ row.get("status", "Unknown") }}
+                            </span>
+
+                            {% endif %}
+
+                        </td>
+
+                        <td class="px-6 py-4 text-gray-500">
+                            {{ row.get("timestamp", "") }}
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        {% else %}
+
+        <div class="p-8 text-center text-gray-500">
+            No send history available.
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endblock %}
